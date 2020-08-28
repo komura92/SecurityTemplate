@@ -16,7 +16,7 @@ public class BearerConfig extends SecurityConfigurerAdapter<DefaultSecurityFilte
     }
 
     @Override
-    public void configure(HttpSecurity builder) throws Exception {
+    public void configure(HttpSecurity builder) {
         BearerFilter filter = new BearerFilter(this.tokenProvider);
         builder.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }

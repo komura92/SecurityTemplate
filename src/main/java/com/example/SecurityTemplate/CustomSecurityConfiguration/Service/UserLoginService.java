@@ -17,6 +17,7 @@ import com.example.SecurityTemplate.CustomSecurityConfiguration.Utils.UserContex
 import com.example.SecurityTemplate.CustomSecurityConfiguration.Validator.UserActualPasswordValidator;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.Validator.UserEmailValidator;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.Validator.UserNewPasswordValidator;
+import com.example.SecurityTemplate.CustomSecurityConfiguration.Validator.UsernameValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -47,11 +48,16 @@ public class UserLoginService implements UserDetailsService {
 
     @Transactional
     public void register(UserRegisterModel userRegisterModel) {
-        if (userRepository.findUserByUsername(userRegisterModel.getUsername()).isPresent())
+        if (userRepository.findUserByUsername(userRegisterModel.getUsername()).isPresent()
+                || Objects.equals(userRegisterModel.getUsername(), UserContextUtils.ANONYMOUS_USERNAME))
             throw new UserAlreadyExistsException(userRegisterModel.getUsername());
 
-        if (!UserNewPasswordValidator.validate(userRegisterModel.getPassword())) {
+        if (!UsernameValidator.validate(userRegisterModel.getUsername())) {
             throw new BadUsernameException();
+        }
+
+        if (!UserNewPasswordValidator.validate(userRegisterModel.getPassword())) {
+            throw new PasswordTooWeak();
         }
 
         if (!UserEmailValidator.validate(userRegisterModel.getEmail())) {
@@ -62,7 +68,7 @@ public class UserLoginService implements UserDetailsService {
         User user = new User(
                 null,
                 userRegisterModel.getUsername(),
-                encoder.encode(userRegisterModel.getPassword()), //TODO with passwordUtils?
+                PasswordUtils.getNewPasswordHash(userRegisterModel.getPassword()),
                 userRegisterModel.getEmail(),
                 roles,
                 !LoginConfiguration.REQUIRED_ACTIVATION,

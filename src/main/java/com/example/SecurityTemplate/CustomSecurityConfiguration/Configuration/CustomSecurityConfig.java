@@ -10,6 +10,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -17,6 +19,17 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final TokenProvider tokenProvider;
+
+    @Bean
+    public LogoutSuccessHandler logoutSuccessHandler() {
+        return new CustomLogoutSuccessHandler();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler loginSuccessHandler(){
+        return new CustomLoginSuccessHandler();
+    }
+
 
     @Bean
     @Override
@@ -30,13 +43,15 @@ public class CustomSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                 .logoutUrl(LoginConfiguration.LOGIN_CONTROLLER_PATH + LoginConfiguration.LOGOUT_PATH)
                 .invalidateHttpSession(true)
-                .clearAuthentication(true)
+                .logoutSuccessHandler(logoutSuccessHandler())
                 .deleteCookies("JSESSIONID")
                 .and()
                 .csrf().disable()
                 .cors()
                 .and()
-                .formLogin().disable()
+                .formLogin()
+                .successHandler(loginSuccessHandler())
+                .and()
                 .httpBasic()
                 .and()
                 .authorizeRequests()

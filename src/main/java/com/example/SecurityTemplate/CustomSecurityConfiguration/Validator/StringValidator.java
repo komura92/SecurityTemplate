@@ -9,15 +9,15 @@ public class StringValidator {
     }
 
     protected static boolean containsLowerCase(String string) {
-        return string.chars().anyMatch(c -> Character.isLetter(c) && Character.isUpperCase(c));
+        return string.chars().anyMatch(c -> Character.isLetter(c) && Character.isLowerCase(c));
     }
 
     protected static boolean containsNumber(String string) {
         return string.chars().anyMatch(Character::isDigit);
     }
 
-    protected static boolean containsSpecialCharacter(String string) {
-        return string.chars().anyMatch(LoginConfiguration.SPECIAL_CHARACTERS::contains); //check
+    protected static boolean containsDefinedSpecialCharacter(String string) {
+        return string.chars().anyMatch(o -> LoginConfiguration.DEFINED_SPECIAL_CHARACTERS.contains((char) o));
     }
 
     protected static boolean containsGivenCharacter(String string, Character c) {
@@ -26,6 +26,10 @@ public class StringValidator {
     }
 
     protected static boolean containsLegalCharacters(String string) {
-        return string.chars().noneMatch(o -> !LoginConfiguration.SPECIAL_CHARACTERS.contains(o) || !Character.isLetterOrDigit(o));
+        return string != null &&
+                !string.isEmpty() &&
+                string.chars().noneMatch(o ->
+                                !LoginConfiguration.DEFINED_SPECIAL_CHARACTERS.contains((char) o) &&
+                                        !Character.isLetterOrDigit(o));
     }
 }

@@ -66,9 +66,4 @@ public class LoginFacade {
     public void resetPassword(UserResetPasswordModel userResetPasswordModel) {
         userLinksService.resetPassword(userResetPasswordModel);
     }
-
-    //TODO in controller ? logoutSuccessHandler
-    public void logout() {
-        UserContextUtils.disableAuthentication();
-    }
 }

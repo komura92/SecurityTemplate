@@ -7,10 +7,12 @@ import com.example.SecurityTemplate.CustomSecurityConfiguration.Model.*;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.ScopeAnnotations.AuthorizedScope;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.ScopeAnnotations.OnlyUnauthorizedScope;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.ScopeAnnotations.SecureScopeForRole;
+import com.example.SecurityTemplate.CustomSecurityConfiguration.Validator.UserEmailValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -61,17 +63,5 @@ public class AccountController {
     @GetMapping(value = LoginConfiguration.ACTIVATION_PATH + "/{activationLink}")
     public void activate(@PathVariable String activationLink) {
         loginFacade.activateAccount(activationLink);
-    }
-
-    //TEST
-    @GetMapping(value = "/siema")
-    //@SecureScopeForRole(role = Role.USER)
-    public void NoSiema() {
-        log.error("error");
-        log.debug("debug");
-        log.warn("warn");
-        log.trace("trace");
-        log.info("info");
-        System.out.println("siema mordy");
     }
 }

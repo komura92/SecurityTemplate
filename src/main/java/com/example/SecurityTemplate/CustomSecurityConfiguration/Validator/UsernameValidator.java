@@ -29,14 +29,16 @@ public class UsernameValidator extends StringValidator {
             return false;
         }
 
-        if (username.chars().anyMatch(Character::isDigit) &&
-                !LoginConfiguration.USERNAME_CAN_CONTAINS_DIGITS) {
+        if (!LoginConfiguration.USERNAME_CAN_CONTAINS_DIGITS &&
+                containsNumber(username)) {
+
             log.debug("Username cannot contains digits");
             return false;
         }
 
-        if (containsSpecialCharacter(username) &&
-                !LoginConfiguration.USERNAME_CAN_CONTAINS_SPECIAL_CHARACTERS) {
+        if (!LoginConfiguration.USERNAME_CAN_CONTAINS_DEFINED_SPECIAL_CHARACTERS &&
+                containsDefinedSpecialCharacter(username)) {
+
             log.debug("Username cannot contains special characters");
             return false;
         }
@@ -48,6 +50,6 @@ public class UsernameValidator extends StringValidator {
         return LoginConfiguration.USERNAME_CAN_CONTAINS_LOWER_CASES ||
                 LoginConfiguration.USERNAME_CAN_CONTAINS_UPPER_CASES ||
                 LoginConfiguration.USERNAME_CAN_CONTAINS_DIGITS ||
-                LoginConfiguration.USERNAME_CAN_CONTAINS_SPECIAL_CHARACTERS;
+                LoginConfiguration.USERNAME_CAN_CONTAINS_DEFINED_SPECIAL_CHARACTERS;
     }
 }

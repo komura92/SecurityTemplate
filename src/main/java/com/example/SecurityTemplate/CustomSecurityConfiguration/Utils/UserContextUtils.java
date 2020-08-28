@@ -7,9 +7,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 @RequiredArgsConstructor
 public class UserContextUtils {
+
+    public static final String ANONYMOUS_USERNAME = "anonymousUser";
 
     public static MyUserDetails getActualUser() {
         if (!isUserAuthenticated() ||
@@ -20,13 +24,8 @@ public class UserContextUtils {
         return (MyUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
-    //TODO NOT WORKING SO WELL
-    private static boolean isUserAuthenticated() {
+    public static boolean isUserAuthenticated() {
         return SecurityContextHolder.getContext().getAuthentication() != null &&
-                SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
-    }
-
-    public static void disableAuthentication() {
-        SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+                !Objects.equals(SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString(), ANONYMOUS_USERNAME);
     }
 }

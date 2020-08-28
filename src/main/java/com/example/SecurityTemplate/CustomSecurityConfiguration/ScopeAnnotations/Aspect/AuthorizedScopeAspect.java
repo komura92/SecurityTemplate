@@ -1,5 +1,6 @@
 package com.example.SecurityTemplate.CustomSecurityConfiguration.ScopeAnnotations.Aspect;
 
+import com.example.SecurityTemplate.CustomSecurityConfiguration.Exception.UserNotAuthenticated;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.Model.MyUserDetails;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.ScopeAnnotations.AuthorizedScope;
 import com.example.SecurityTemplate.CustomSecurityConfiguration.Utils.UserContextUtils;
@@ -17,7 +18,9 @@ public class AuthorizedScopeAspect {
 
     @Before("@annotation(scope)")
     public void validateScope(AuthorizedScope scope) {
-        MyUserDetails myUserDetails = UserContextUtils.getActualUser();
+        if (!UserContextUtils.isUserAuthenticated()) {
+            throw new UserNotAuthenticated();
+        }
     }
 
 }

@@ -39,17 +39,18 @@ public class LoginConfiguration {
     public static final Sender resetPasswordLinkSender = new ResetPasswordLinkSender();
 
     //PASSWORD REQUIREMENTS CONFIGURATION
+    public static final int PASSWORD_MIN_LENGTH = 10;
     public static final boolean PASSWORD_CONTAINS_UPPERCASE = true;
     public static final boolean PASSWORD_CONTAINS_LOWERCASE = true;
     public static final boolean PASSWORD_CONTAINS_DIGIT = true;
-    public static final boolean PASSWORD_CONTAINS_SPECIAL_CHARACTER = true;
-    public static final List<Character> SPECIAL_CHARACTERS = Arrays.asList('$', '#', '@', '%', '&', '*', '!', '?');
+    public static final boolean PASSWORD_CONTAINS_DEFINED_SPECIAL_CHARACTER = true;
+    public static final List<Character> DEFINED_SPECIAL_CHARACTERS = Arrays.asList('$', '#', '@', '%', '&', '*', '!', '?', '.', '_');
 
     //USERNAME CONFIGURATION
     public static final boolean USERNAME_CAN_CONTAINS_UPPER_CASES = true;
     public static final boolean USERNAME_CAN_CONTAINS_LOWER_CASES = true;
     public static final boolean USERNAME_CAN_CONTAINS_DIGITS = true;
-    public static final boolean USERNAME_CAN_CONTAINS_SPECIAL_CHARACTERS = false;
+    public static final boolean USERNAME_CAN_CONTAINS_DEFINED_SPECIAL_CHARACTERS = false;
 
     //FUNCTIONAL CONFIGURATION
     public static final boolean REQUIRED_ACTIVATION = true;
