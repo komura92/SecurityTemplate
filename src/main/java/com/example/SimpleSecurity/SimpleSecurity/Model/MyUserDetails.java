@@ -1,5 +1,6 @@
 package com.example.SimpleSecurity.SimpleSecurity.Model;
 
+import com.example.SimpleSecurity.SimpleSecurity.Configuration.LoginConfiguration;
 import com.example.SimpleSecurity.SimpleSecurity.Entity.User;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,7 +32,7 @@ public class MyUserDetails extends User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return this.isActivated();
+        return (!LoginConfiguration.REQUIRED_ACTIVATION || this.isActivated());
     }
 
     @Override
@@ -46,6 +47,6 @@ public class MyUserDetails extends User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return this.isActivated() && !this.isBlocked();
+        return (!LoginConfiguration.REQUIRED_ACTIVATION || this.isActivated()) && !this.isBlocked();
     }
 }

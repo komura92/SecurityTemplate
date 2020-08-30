@@ -95,7 +95,7 @@ public class UserLoginService implements UserDetailsService {
                 .findUserByUsername(userLoginModel.getUsername())
                 .orElseThrow(() -> new UserNotFoundException(userLoginModel.getUsername()));
 
-        if (user.isBlocked() || !user.isActivated()) {
+        if (user.isBlocked() || (LoginConfiguration.REQUIRED_ACTIVATION && !user.isActivated())) {
             log.debug("User is not activated or blocked [id={}]", user.getId());
             return null;
         }
