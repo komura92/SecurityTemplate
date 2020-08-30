@@ -16,7 +16,7 @@ import com.example.SimpleSecurity.SimpleSecurity.Validator.ActivationLinkValidat
 import com.example.SimpleSecurity.SimpleSecurity.Validator.ResetPasswordLinkValidator;
 import com.example.SimpleSecurity.SimpleSecurity.Validator.UserNewPasswordValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserLinksService {
@@ -34,29 +33,30 @@ public class UserLinksService {
     private final ActivationLinkValidator activationLinkValidator;
     private final ResetPasswordLinkValidator resetPasswordLinkValidator;
 
+    private Logger logger = Logger.getLogger(UserLinksService.class);
+
     @Transactional
     public void activate(String activationLink) {
         Optional<UserActivationLink> userActivationLink = userActivationLinkRepository.findByActivationLink(activationLink);
 
         if (userActivationLink.isEmpty()) {
-            log.debug("User activation link doesn't exist");
             return;
         }
 
         UserActivationLink activationLinkEntity = userActivationLink.get();
 
         if (activationLinkValidator.isExpired(activationLinkEntity)) {
-            log.debug("Activation link expired");
+            logger.trace("Activation link expired [linkId=" + activationLinkEntity.getId() + "]");
             return;
         }
 
         if (activationLinkEntity.getUser().isActivated()) {
-            log.debug("User already activated");
+            logger.trace("User already activated [username=" + activationLinkEntity.getUser().getUsername() + "]");
             return;
         }
 
         if (activationLinkEntity.getUser().isBlocked()) {
-            log.debug("User blocked");
+            logger.trace("User blocked [username=" + activationLinkEntity.getUser().getUsername() + "]");
             return;
         }
 
@@ -77,34 +77,32 @@ public class UserLinksService {
                 .orElseThrow(() -> new UserNotFoundException(userResetPasswordModel.getUsername()));
 
         if (userResetPasswordLink.isEmpty()) {
-            log.debug("Reset password link not found");
             return;
         }
 
         UserResetPasswordLink resetPasswordLinkEntity = userResetPasswordLink.get();
 
         if (!Objects.equals(user, resetPasswordLinkEntity.getUser())) {
-            log.debug("Bad credentials");
+            logger.trace("Bad credentials [username=" + user.getUsername() + "]");
             throw new UserNoMatchLinkException(user.getId(), resetPasswordLinkEntity.getUser().getId());
         }
 
         if (resetPasswordLinkValidator.isExpired(resetPasswordLinkEntity)) {
-            log.debug("Reset password link expired");
+            logger.trace("Reset password link expired [linkId=" + resetPasswordLinkEntity.getId() + "]");
             return;
         }
 
         if (LoginConfiguration.REQUIRED_ACTIVATION && !resetPasswordLinkEntity.getUser().isActivated()) {
-            log.debug("User not activated yet");
+            logger.trace("User not activated yet [username=" + user.getUsername() + "]");
             return;
         }
 
         if (resetPasswordLinkEntity.getUser().isBlocked()) {
-            log.debug("User blocked");
+            logger.trace("User blocked [username=" + user.getUsername() + "]");
             return;
         }
 
         if (!UserNewPasswordValidator.validate(userResetPasswordModel.getPassword())) {
-            log.debug("Password is too weak");
             throw new PasswordTooWeak();
         }
 

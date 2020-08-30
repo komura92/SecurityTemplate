@@ -2,16 +2,17 @@ package com.example.SimpleSecurity.SimpleSecurity.Facade;
 
 import com.example.SimpleSecurity.SimpleSecurity.Configuration.LoginConfiguration;
 import com.example.SimpleSecurity.SimpleSecurity.Model.*;
-import com.example.SimpleSecurity.SimpleSecurity.Service.UserLoginService;
 import com.example.SimpleSecurity.SimpleSecurity.Service.UserLinksService;
+import com.example.SimpleSecurity.SimpleSecurity.Service.UserLoginService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class LoginFacade {
+
+    private Logger logger = Logger.getLogger(LoginFacade.class);
 
     private final UserLoginService userLoginService;
     private final UserLinksService userLinksService;
@@ -24,23 +25,23 @@ public class LoginFacade {
             LoginConfiguration.activationLinkSender.send(activationLink, userRegisterModel.getEmail());
         }
 
-        log.info("New user registered [username={}]", userRegisterModel.getUsername());
+        logger.trace("New user registered [username=" + userRegisterModel.getUsername() + "]");
     }
 
     public UserAuthenticatedModel login(UserLoginModel userLoginModel) {
         UserAuthenticatedModel userAuthenticatedModel = userLoginService.login(userLoginModel);
-        log.info("User logged in [username={}]", userLoginModel.getUsername());
+        logger.trace("User logged in [username=" + userLoginModel.getUsername() + "]");
         return userAuthenticatedModel;
     }
 
     public void deleteAccount(UserDeleteModel userDeleteModel) {
         userLoginService.delete(userDeleteModel);
-        log.info("User deleted [username={}]", userDeleteModel.getUsername());
+        logger.trace("User deleted [username=" + userDeleteModel.getUsername() + "])");
     }
 
     public void activateAccount(String activationLink) {
         if (!LoginConfiguration.REQUIRED_ACTIVATION) {
-            log.info("Server not required activations");
+            logger.trace("Server not required activations");
             return;
         }
 
@@ -49,12 +50,12 @@ public class LoginFacade {
 
     public void changePassword(UserChangePasswordModel userChangePasswordModel) {
         userLoginService.updateUserPassword(userChangePasswordModel);
-        log.info("User changed password [username={}]", userChangePasswordModel.getUsername());
+        logger.trace("User changed password [username=" + userChangePasswordModel.getUsername() + "]");
     }
 
     public void initResetPassword(String username) {
         if (LoginConfiguration.resetPasswordLinkSender == null) {
-            log.error("ResetPasswordLinkSender is null");
+            logger.error("ResetPasswordLinkSender is null");
             return;
         }
         String newResetPasswordLink = userLoginService.getNewResetPasswordLink(username);

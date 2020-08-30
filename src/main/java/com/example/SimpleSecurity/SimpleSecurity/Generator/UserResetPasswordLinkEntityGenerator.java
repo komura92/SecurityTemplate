@@ -9,14 +9,12 @@ import com.example.SimpleSecurity.SimpleSecurity.Repository.UserRepository;
 import com.example.SimpleSecurity.SimpleSecurity.Repository.UserResetPasswordLinkRepository;
 import com.example.SimpleSecurity.SimpleSecurity.Validator.ResetPasswordLinkValidator;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class UserResetPasswordLinkEntityGenerator extends Generator {
